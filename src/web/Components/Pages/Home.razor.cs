@@ -57,7 +57,7 @@ public partial class Home
         Response<Item> writeResponse = await container.UpsertItemAsync(item);
 
         await WriteConsoleAsync("Upsert opertaion done", highlight: true);
-        await WriteConsoleAsync($"Request charge of the operation: {writeResponse.RequestCharge}");
+        await WriteConsoleAsync($"Request charge of the operation: {writeResponse.RequestCharge:0.00}");
         await WriteConsoleAsync($"Activity ID of the operation: {writeResponse.ActivityId}");
 
         await WriteConsoleAsync($"Point reading item id \"{id}\" and partition key \"{partitionKey}\"");
@@ -65,7 +65,7 @@ public partial class Home
         Response<Item> readResponse = await container.ReadItemAsync<Item>(id, new PartitionKey(partitionKey));
 
         await WriteConsoleAsync("Read operation done", highlight: true);
-        await WriteConsoleAsync($"Request charge of the operation: {readResponse.RequestCharge}");
+        await WriteConsoleAsync($"Request charge of the operation: {readResponse.RequestCharge:0.00}");
         await WriteConsoleAsync($"Activity ID of the operation: {readResponse.ActivityId}");
 
         string azureOpenAIEndpoint = connection.AzureOpenAI?.Endpoint ?? throw new ArgumentNullException("Azure OpenAI endpoint is not configured. Please configure the \"Connection:AzureOpenAI:Endpoint\" configuration setting.");
@@ -89,6 +89,8 @@ public partial class Home
         await WriteConsoleAsync("Chat completion done", highlight: true);
         await WriteConsoleAsync($"Chat completion ID: {completion.Id}");
         await WriteConsoleAsync($"Chat completion content count: {completion.Content.Count}");
+        await WriteConsoleAsync($"Input token usage: {completion.Usage.InputTokenCount:000}");
+        await WriteConsoleAsync($"Output token usage: {completion.Usage.OutputTokenCount:000}");
 
         string response = string.Join(Environment.NewLine, completion.Content.Select(c => c.Text)).Trim();
 
