@@ -149,7 +149,7 @@ module appServiceWebApp 'br/public:avm/res/web/site:0.9.0' = {
           value: openAiAccount.outputs.endpoint
         }
       ]
-      linuxFxVersion: 'DOTNETCORE|9.0'
+      linuxFxVersion: 'DOTNETCORE|8.0'
     }
   }
 }

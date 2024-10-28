@@ -2,6 +2,7 @@ using System.ClientModel;
 using Azure.AI.OpenAI;
 using Azure.Core;
 using Azure.Identity;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using Microsoft.Samples.Cosmos.Basic.Web.Models;
@@ -12,12 +13,10 @@ namespace Microsoft.Samples.Cosmos.Basic.Web.Components.Pages;
 
 public partial class Home
 {
-    private readonly Connection connection;
+    [Inject]
+    private IOptions<Connection>? ConnectionOptions { get; set; }
 
-    public Home(IOptions<Connection> connectionOptions)
-    {
-        this.connection = connectionOptions.Value;
-    }
+    private Connection? Connection => ConnectionOptions?.Value;
 
     public List<(string content, bool highlight)> ConsoleOutput { get; private set; } = new();
 
@@ -32,9 +31,9 @@ public partial class Home
 
         TokenCredential credential = new DefaultAzureCredential();
 
-        string azureCosmosDBEndpoint = connection.AzureCosmosDB?.Endpoint ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL endpoint is not configured. Please configure the \"Connection:AzureCosmosDB:Endpoint\" configuration setting.");
-        string databaseName = connection.AzureCosmosDB?.DatabaseName ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL database name is not configured. Please configure the \"Connection:AzureCosmosDB:DatabaseName\" configuration setting.");
-        string containerName = connection.AzureCosmosDB?.ContainerName ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL container name is not configured. Please configure the \"Connection:AzureCosmosDB:ContainerName\" configuration setting.");
+        string azureCosmosDBEndpoint = Connection?.AzureCosmosDB?.Endpoint ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL endpoint is not configured. Please configure the \"Connection:AzureCosmosDB:Endpoint\" configuration setting.");
+        string databaseName = Connection?.AzureCosmosDB?.DatabaseName ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL database name is not configured. Please configure the \"Connection:AzureCosmosDB:DatabaseName\" configuration setting.");
+        string containerName = Connection?.AzureCosmosDB?.ContainerName ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL container name is not configured. Please configure the \"Connection:AzureCosmosDB:ContainerName\" configuration setting.");
 
         await WriteConsoleAsync("Connecting to Azure Cosmos DB for NoSQL client...");
         await WriteConsoleAsync($"Azure Cosmos DB for NoSQL Endpoint: {azureCosmosDBEndpoint}");
@@ -57,7 +56,7 @@ public partial class Home
         Response<Item> writeResponse = await container.UpsertItemAsync(item);
 
         await WriteConsoleAsync("Upsert opertaion done", highlight: true);
-        await WriteConsoleAsync($"Request charge of the operation: {writeResponse.RequestCharge}");
+        await WriteConsoleAsync($"Request charge of the operation: {writeResponse.RequestCharge:0.00}");
         await WriteConsoleAsync($"Activity ID of the operation: {writeResponse.ActivityId}");
 
         await WriteConsoleAsync($"Point reading item id \"{id}\" and partition key \"{partitionKey}\"");
@@ -65,11 +64,11 @@ public partial class Home
         Response<Item> readResponse = await container.ReadItemAsync<Item>(id, new PartitionKey(partitionKey));
 
         await WriteConsoleAsync("Read operation done", highlight: true);
-        await WriteConsoleAsync($"Request charge of the operation: {readResponse.RequestCharge}");
+        await WriteConsoleAsync($"Request charge of the operation: {readResponse.RequestCharge:0.00}");
         await WriteConsoleAsync($"Activity ID of the operation: {readResponse.ActivityId}");
 
-        string azureOpenAIEndpoint = connection.AzureOpenAI?.Endpoint ?? throw new ArgumentNullException("Azure OpenAI endpoint is not configured. Please configure the \"Connection:AzureOpenAI:Endpoint\" configuration setting.");
-        string deploymentName = connection.AzureOpenAI?.DeploymentName ?? throw new ArgumentNullException("Azure OpenAI deployment name is not configured. Please configure the \"Connection:AzureOpenAI:DeploymentName\" configuration setting.");
+        string azureOpenAIEndpoint = Connection?.AzureOpenAI?.Endpoint ?? throw new ArgumentNullException("Azure OpenAI endpoint is not configured. Please configure the \"Connection:AzureOpenAI:Endpoint\" configuration setting.");
+        string deploymentName = Connection?.AzureOpenAI?.DeploymentName ?? throw new ArgumentNullException("Azure OpenAI deployment name is not configured. Please configure the \"Connection:AzureOpenAI:DeploymentName\" configuration setting.");
 
         await WriteConsoleAsync("Connecting to Azure OpenAI client...");
         await WriteConsoleAsync($"Azure OpenAI Endpoint: {azureOpenAIEndpoint}");
@@ -89,6 +88,8 @@ public partial class Home
         await WriteConsoleAsync("Chat completion done", highlight: true);
         await WriteConsoleAsync($"Chat completion ID: {completion.Id}");
         await WriteConsoleAsync($"Chat completion content count: {completion.Content.Count}");
+        await WriteConsoleAsync($"Input token usage: {completion.Usage.InputTokenCount:000}");
+        await WriteConsoleAsync($"Output token usage: {completion.Usage.OutputTokenCount:000}");
 
         string response = string.Join(Environment.NewLine, completion.Content.Select(c => c.Text)).Trim();
 
