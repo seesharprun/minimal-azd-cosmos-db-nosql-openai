@@ -148,6 +148,10 @@ module appServiceWebApp 'br/public:avm/res/web/site:0.9.0' = {
           name: 'CONNECTION__AZUREOPENAI__ENDPOINT'
           value: openAiAccount.outputs.endpoint
         }
+        {
+          name: 'AZURE_CLIENT_ID'
+          value: managedIdentity.outputs.clientId
+        }
       ]
       linuxFxVersion: 'DOTNETCORE|8.0'
     }
