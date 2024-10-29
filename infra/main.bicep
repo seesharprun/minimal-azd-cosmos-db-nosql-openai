@@ -181,5 +181,5 @@ module openAiRoleAssignmentDeploymentUserIdentity 'br/public:avm/ptn/authorizati
   }
 }
 
-output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = cosmosDbAccount.outputs.endpoint
-output AZURE_OPEN_AI_ENDPOINT string = openAiAccount.outputs.endpoint
+output CONNECTION__AZURECOSMOSDB__ENDPOINT string = cosmosDbAccount.outputs.endpoint
+output CONNECTION__AZUREOPENAI__ENDPOINT = openAiAccount.outputs.endpoint

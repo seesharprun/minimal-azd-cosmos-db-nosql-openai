@@ -6,19 +6,3 @@ services:
     project: ./src/web
     language: csharp
     host: appservice
-hooks:
-  postprovision:
-    windows:
-      run: |
-        dotnet user-secrets set "CONNECTION:AZURECOSMOSDB:ENDPOINT" "$env:AZURE_COSMOS_DB_NOSQL_ENDPOINT" --project ./src/web/Microsoft.Samples.Cosmos.Basic.Web.csproj
-        dotnet user-secrets set "CONNECTION:AZUREOPENAI:ENDPOINT" "$env:AZURE_OPEN_AI_ENDPOINT" --project ./src/web/Microsoft.Samples.Cosmos.Basic.Web.csproj
-      shell: pwsh
-      continueOnError: false
-      interactive: true
-    posix:
-      run: |
-        dotnet user-secrets set "CONNECTION:AZURECOSMOSDB:ENDPOINT" "$AZURE_COSMOS_DB_NOSQL_ENDPOINT" --project ./src/web/Microsoft.Samples.Cosmos.Basic.Web.csproj    
-        dotnet user-secrets set "CONNECTION:AZUREOPENAI:ENDPOINT" "$AZURE_OPEN_AI_ENDPOINT" --project ./src/web/Microsoft.Samples.Cosmos.Basic.Web.csproj
-      shell: sh
-      continueOnError: false
-      interactive: true
