@@ -13,10 +13,12 @@ namespace Microsoft.Samples.Cosmos.Basic.Web.Components.Pages;
 
 public partial class Home
 {
-    [Inject]
-    private IOptions<Connection>? ConnectionOptions { get; set; }
+    private readonly Connection connection;
 
-    private Connection? Connection => ConnectionOptions?.Value;
+    public Home(IOptions<Connection> connectionOptions)
+    {
+        this.connection = connectionOptions.Value;
+    }
 
     public List<(string content, bool highlight)> ConsoleOutput { get; private set; } = new();
 
@@ -31,9 +33,9 @@ public partial class Home
 
         TokenCredential credential = new DefaultAzureCredential();
 
-        string azureCosmosDBEndpoint = Connection?.AzureCosmosDB?.Endpoint ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL endpoint is not configured. Please configure the \"Connection:AzureCosmosDB:Endpoint\" configuration setting.");
-        string databaseName = Connection?.AzureCosmosDB?.DatabaseName ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL database name is not configured. Please configure the \"Connection:AzureCosmosDB:DatabaseName\" configuration setting.");
-        string containerName = Connection?.AzureCosmosDB?.ContainerName ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL container name is not configured. Please configure the \"Connection:AzureCosmosDB:ContainerName\" configuration setting.");
+        string azureCosmosDBEndpoint = connection.AzureCosmosDB?.Endpoint ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL endpoint is not configured. Please configure the \"Connection:AzureCosmosDB:Endpoint\" configuration setting.");
+        string databaseName = connection.AzureCosmosDB?.DatabaseName ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL database name is not configured. Please configure the \"Connection:AzureCosmosDB:DatabaseName\" configuration setting.");
+        string containerName = connection.AzureCosmosDB?.ContainerName ?? throw new ArgumentNullException("Azure Cosmos DB for NoSQL container name is not configured. Please configure the \"Connection:AzureCosmosDB:ContainerName\" configuration setting.");
 
         await WriteConsoleAsync("Connecting to Azure Cosmos DB for NoSQL client...");
         await WriteConsoleAsync($"Azure Cosmos DB for NoSQL Endpoint: {azureCosmosDBEndpoint}");
@@ -67,8 +69,8 @@ public partial class Home
         await WriteConsoleAsync($"Request charge of the operation: {readResponse.RequestCharge:0.00}");
         await WriteConsoleAsync($"Activity ID of the operation: {readResponse.ActivityId}");
 
-        string azureOpenAIEndpoint = Connection?.AzureOpenAI?.Endpoint ?? throw new ArgumentNullException("Azure OpenAI endpoint is not configured. Please configure the \"Connection:AzureOpenAI:Endpoint\" configuration setting.");
-        string deploymentName = Connection?.AzureOpenAI?.DeploymentName ?? throw new ArgumentNullException("Azure OpenAI deployment name is not configured. Please configure the \"Connection:AzureOpenAI:DeploymentName\" configuration setting.");
+        string azureOpenAIEndpoint = connection.AzureOpenAI?.Endpoint ?? throw new ArgumentNullException("Azure OpenAI endpoint is not configured. Please configure the \"Connection:AzureOpenAI:Endpoint\" configuration setting.");
+        string deploymentName = connection.AzureOpenAI?.DeploymentName ?? throw new ArgumentNullException("Azure OpenAI deployment name is not configured. Please configure the \"Connection:AzureOpenAI:DeploymentName\" configuration setting.");
 
         await WriteConsoleAsync("Connecting to Azure OpenAI client...");
         await WriteConsoleAsync($"Azure OpenAI Endpoint: {azureOpenAIEndpoint}");

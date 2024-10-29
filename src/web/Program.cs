@@ -11,7 +11,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 await app.RunAsync();

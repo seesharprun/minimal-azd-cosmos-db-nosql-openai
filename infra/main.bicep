@@ -153,7 +153,7 @@ module appServiceWebApp 'br/public:avm/res/web/site:0.9.0' = {
           value: managedIdentity.outputs.clientId
         }
       ]
-      linuxFxVersion: 'DOTNETCORE|8.0'
+      linuxFxVersion: 'DOTNETCORE|9.0'
     }
   }
 }
